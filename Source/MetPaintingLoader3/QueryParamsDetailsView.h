@@ -14,7 +14,10 @@ class METPAINTINGLOADER3_API UQueryParamsDetailsView : public UDetailsView
 {
 	GENERATED_BODY()
 public:
-	
+	virtual void OnWidgetRebuilt() override;
+
+	UPROPERTY(EditAnywhere, Category = "Query Params")
+	FString TestStringProp = "";
 	
 	
 };
