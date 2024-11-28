@@ -13,5 +13,10 @@ UCLASS()
 class METPAINTINGLOADER3_API UMetPaintingsWindow : public UEditorUtilityWidget
 {
 	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadOnly)
+	FString URLBase = "https://collectionapi.metmuseum.org/public/collection/v1/objects/";
+	
+	void QueryAPI(FString search);
 	
 };

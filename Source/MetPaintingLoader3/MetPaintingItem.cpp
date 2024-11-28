@@ -37,7 +37,7 @@ void UMetPaintingItem::JLInitializeAndLoadInfo(int ObjectID)
 	auto Req = FHttpModule::Get().CreateRequest();
 	Req->SetVerb("GET");
 
-	Req->SetURL(URLBase + FString::FromInt(ObjectID));\
+	Req->SetURL(URLBase + FString::FromInt(ObjectID));
 	Req->OnProcessRequestComplete().BindUObject(this, &UMetPaintingItem::JLOnInfoDownloadComplete);
 	Req->ProcessRequest();
 }
