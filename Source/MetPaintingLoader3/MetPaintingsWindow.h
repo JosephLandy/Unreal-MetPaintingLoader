@@ -6,7 +6,33 @@
 #include "EditorUtilityWidget.h"
 #include "MetPaintingsWindow.generated.h"
 
+class IHttpResponse;
+class IHttpRequest;
 class UEditorUtilityComboBoxString;
+
+USTRUCT()
+struct FDepartmentEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int departmentId;
+	UPROPERTY()
+	FString displayName;
+};
+
+
+USTRUCT()
+struct FDepartmentsStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FDepartmentEntry> departments;
+};
+
+
+
 /**
  * 
  */
@@ -25,7 +51,8 @@ public:
 	
 	void QueryAPI(FString search);
 
+	void OnGetDepartmentsComplete(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bSuccess);
+	
 	void GetDepartments();
-	// void OnGetDepartmentsComplete();
 	
 };
