@@ -44,15 +44,13 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FString URLBase = "https://collectionapi.metmuseum.org/public/collection/v1/objects/";
 
-	UPROPERTY(meta=(BindWidget), BlueprintReadOnly)
-	UEditorUtilityComboBoxString* TEMPEditorComboTest1;
+	// UPROPERTY(meta=(BindWidget), BlueprintReadOnly)
+	// UEditorUtilityComboBoxString* TEMPEditorComboTest1;
 
 	virtual void NativeConstruct() override;
 	
-	void QueryAPI(FString search);
-
 	void OnGetDepartmentsComplete(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bSuccess);
 	
-	void GetDepartments();
+	// void GetDepartments();
 	
 };
