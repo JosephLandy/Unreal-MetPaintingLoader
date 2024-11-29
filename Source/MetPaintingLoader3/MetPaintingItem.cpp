@@ -7,6 +7,7 @@
 #include "JsonObjectConverter.h"
 #include "Blueprint/AsyncTaskDownloadImage.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Windows/WindowsPlatformApplicationMisc.h"
 
 void UMetPaintingItem::JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request,
                                                 TSharedPtr<IHttpResponse> Response, bool bSuccess)
@@ -21,11 +22,12 @@ void UMetPaintingItem::JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request
 	IHttpResponse* HTTPResp = Response.Get();
 	FString Content = HTTPResp->GetContentAsString();
 
-	FMetPaintingInfo PaintingInfo;
-	FJsonObjectConverter::JsonObjectStringToUStruct(Content, &PaintingInfo, 0, 0);
+	// FMetPaintingInfo PaintingInfo;
+	Initialized = FJsonObjectConverter::JsonObjectStringToUStruct(Content, &PaintingInfo, 0, 0);
 
 	// This might need to emit a signal at this point when it's actually loaded the info and various properties can
 	// actually be displayed. Otherwise, it might be bad trying to display undefined struct members.
+
 	
 	UAsyncTaskDownloadImage* DownloadImageTask = UAsyncTaskDownloadImage::DownloadImage(PaintingInfo.primaryImageSmall);
 	
@@ -40,4 +42,18 @@ void UMetPaintingItem::JLInitializeAndLoadInfo(int ObjectID)
 	Req->SetURL(URLBase + FString::FromInt(ObjectID));
 	Req->OnProcessRequestComplete().BindUObject(this, &UMetPaintingItem::JLOnInfoDownloadComplete);
 	Req->ProcessRequest();
+}
+
+FReply UMetPaintingItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	FReply NativeReply = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	// copy objectID to clipboard
+	if (Initialized)
+	{
+		// Note: I think this will only work on windows!!!
+		FPlatformApplicationMisc::ClipboardCopy(*(URLBase + FString::FromInt(PaintingInfo.objectID)));
+	}	
+	
+	return NativeReply;
 }

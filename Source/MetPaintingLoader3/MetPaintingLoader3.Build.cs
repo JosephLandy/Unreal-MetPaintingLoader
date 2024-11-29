@@ -11,7 +11,7 @@ public class MetPaintingLoader3 : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
 		PrivateDependencyModuleNames.AddRange(new string[] {"UMG", "Blutility", "HTTP", "Json", "JsonUtilities", "PropertyEditor"});
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "ApplicationCore" }); // needed for copy-paste
 
 		// Uncomment if you are using Slate UI
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

@@ -145,6 +145,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FString URLBase = "https://collectionapi.metmuseum.org/public/collection/v1/objects/";
 
+	UPROPERTY(BlueprintReadOnly)
+	bool Initialized = false;
+
+	FMetPaintingInfo PaintingInfo;
+
 	void JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bSuccess);
 	
 	UFUNCTION(BlueprintCallable)
@@ -152,4 +157,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void JLOnPreviewImageDownloadComplete(UTexture2DDynamic* Texture);
+
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 };
