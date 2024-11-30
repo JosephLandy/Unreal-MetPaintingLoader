@@ -44,10 +44,12 @@ public:
 	bool Use_medium = false;
 	UPROPERTY(EditAnywhere, meta=(EditCondition="Use_medium", EditConditionHides))
 	FString medium;
-	UPROPERTY(EditAnywhere)
-	bool Use_hasImages = false;
-	UPROPERTY(EditAnywhere, meta=(EditCondition="Use_hasImages", EditConditionHides))
-	bool hasImages;
+
+	// We want to ALWAYS include "hasImages" in the search.
+	// UPROPERTY(EditAnywhere)
+	// bool Use_hasImages = false;
+	// UPROPERTY(EditAnywhere, meta=(EditCondition="Use_hasImages", EditConditionHides))
+	// bool hasImages;
 	UPROPERTY(EditAnywhere)
 	bool Use_geoLocation = false;
 	// UPROPERTY(EditAnywhere, meta=(EditCondition="Use_geoLocation", EditConditionHides, ColumnWidth="0.5")) // Is this column width thing real?
@@ -75,9 +77,6 @@ class METPAINTINGLOADER3_API UQueryParamsDetailsView : public UDetailsView
 	GENERATED_BODY()
 public:
 	virtual void OnWidgetRebuilt() override;
-
-	UPROPERTY(EditAnywhere, Category = "Search Params")
-	FString TestStringProp = "";
 
 	UPROPERTY(EditAnywhere, Category = "Search Params")
 	FSearchParameters SearchParameters;
