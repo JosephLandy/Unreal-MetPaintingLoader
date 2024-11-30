@@ -27,6 +27,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool Initialized = false;
 
+	UPROPERTY(BlueprintReadWrite)
 	FMetPaintingInfo PaintingInfo;
 
 	void JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bSuccess);
@@ -38,4 +39,5 @@ public:
 	void JLOnPreviewImageDownloadComplete(UTexture2DDynamic* Texture);
 
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	
 };

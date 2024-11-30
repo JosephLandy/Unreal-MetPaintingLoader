@@ -4,11 +4,14 @@
 #include "MetPaintingsTypes.generated.h"
 
 USTRUCT(BlueprintType)
-struct FTestStruct
+struct FTagItem
 {
 	GENERATED_BODY()
-};
 
+	FString term;
+	FString AAT_URL;
+	FString Wikidata_URL;
+};
 
 USTRUCT(BlueprintType)
 struct FMetPaintingInfo
@@ -125,7 +128,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FString objectURL;
 	UPROPERTY(BlueprintReadWrite)
-	TArray<FString> tags;
+	TArray<FTagItem> tags;
 	
 	UPROPERTY(BlueprintReadWrite)
 	FString objectWikidata_URL;

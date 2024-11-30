@@ -21,11 +21,14 @@ void UQueryParamsDetailsView::OnWidgetRebuilt()
  * The order of the query params is important for some reason.
  * Returns different numbers of results. I think the most important thing is that q should be last.
  * No idea if other orderings matter.
+ *
+ * ANOTHER MAJOR ISSUE:
+ * using "1" vs using "true" for boolean values in the query string matters. https://collectionapi.metmuseum.org/public/collection/v1/objects/484935
  */
 
 FString UQueryParamsDetailsView::GenerateQueryParams()
 {
-	FString QueryParams = "hasImages=true"; // Always include "hasImages" in the search
+	FString QueryParams = "hasImages=1"; // Always include "hasImages" in the search
 	// unfortuneately, hasImages = true does not 
 
 	// Helper macro to append query parameters conditionally

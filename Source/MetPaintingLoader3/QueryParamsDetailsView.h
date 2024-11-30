@@ -13,9 +13,9 @@ struct FSearchParameters
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Use_q = false;
+	bool Use_q = true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="Use_q", EditConditionHides))
-	FString q;
+	FString q = "sunflowers";
 	UPROPERTY(EditAnywhere)
 	bool Use_isHighlight = false;
 	UPROPERTY(EditAnywhere, meta=(EditCondition="Use_isHighlight", EditConditionHides))
@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool Use_isOnView = false;
 	UPROPERTY(EditAnywhere, meta=(EditCondition="Use_isOnView", EditConditionHides))
-	bool isOnView;
+	bool isOnView = true;
 	UPROPERTY(EditAnywhere)
 	bool Use_artistOrCulture = false;
 	UPROPERTY(EditAnywhere, meta=(EditCondition="Use_artistOrCulture", EditConditionHides))
