@@ -11,6 +11,11 @@ class IHttpResponse;
 class IHttpRequest;
 
 
+// DECLARE_DELEGATE_OneParam(FJLMouseEnteredDelegate, FMetPaintingInfo)
+// UDELEGATE()
+// DECLARE_DYNAMIC_DELEGATE_OneParam(FJLOnMouseEnteredDelegate, FMetPaintingInfo, PaintingInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FJLOnMouseEnteredDelegate, FMetPaintingInfo, PaintingInfo);
+
 
 /**
  * 
@@ -31,6 +36,9 @@ public:
 	FMetPaintingInfo PaintingInfo;
 
 	void JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bSuccess);
+
+	UPROPERTY(BlueprintAssignable)
+	FJLOnMouseEnteredDelegate JLOnMouseEntered;
 	
 	UFUNCTION(BlueprintCallable)
 	void JLInitializeAndLoadInfo(int ObjectID);
