@@ -23,6 +23,7 @@ void UMetPaintingItem::JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request
 		// to indicate that this failed. Not sure how I should handle that. 
 		UE_LOG(LogTemp, Error, TEXT("Request failed"));
 		// initialized will be false.
+		RemoveFromParent();
 		return;
 	}
 	IHttpResponse* HTTPResp = Response.Get();
@@ -31,13 +32,31 @@ void UMetPaintingItem::JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request
 	// FMetPaintingInfo PaintingInfo;
 	Initialized = FJsonObjectConverter::JsonObjectStringToUStruct(Content, &PaintingInfo, 0, 0);
 
+	if (!Initialized)
+	{
+		RemoveFromParent();
+		return;
+		
+	}
+	
 	// This might need to emit a signal at this point when it's actually loaded the info and various properties can
 	// actually be displayed. Otherwise, it might be bad trying to display undefined struct members.
 
+
+	if (!PaintingInfo.primaryImageSmall.IsEmpty())
+	{
+		UAsyncTaskDownloadImage* DownloadImageTask = UAsyncTaskDownloadImage::DownloadImage(PaintingInfo.primaryImageSmall);
+		DownloadImageTask->OnSuccess.AddDynamic(this, &UMetPaintingItem::JLOnPreviewImageDownloadComplete);
+	} else if (!PaintingInfo.primaryImage.IsEmpty())
+	{
+		UAsyncTaskDownloadImage* DownloadImageTask = UAsyncTaskDownloadImage::DownloadImage(PaintingInfo.primaryImage);
+		DownloadImageTask->OnSuccess.AddDynamic(this, &UMetPaintingItem::JLOnPreviewImageDownloadComplete);
+	} else
+	{
+		// This widget has no images! Destroy it and remove it from the layout!
+		RemoveFromParent();
+	}
 	
-	UAsyncTaskDownloadImage* DownloadImageTask = UAsyncTaskDownloadImage::DownloadImage(PaintingInfo.primaryImageSmall);
-	
-	DownloadImageTask->OnSuccess.AddDynamic(this, &UMetPaintingItem::JLOnPreviewImageDownloadComplete);
 }
 
 
