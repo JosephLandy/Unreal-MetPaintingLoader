@@ -25,6 +25,9 @@ class METPAINTINGLOADER3_API UMetPaintingItem : public UEditorUtilityWidget
 {
 	GENERATED_BODY()
 
+private:
+	
+	
 public:
 	UPROPERTY(BlueprintReadOnly)
 	FString URLBase = "https://collectionapi.metmuseum.org/public/collection/v1/objects/";
