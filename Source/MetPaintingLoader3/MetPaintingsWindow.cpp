@@ -12,21 +12,19 @@
 void UMetPaintingsWindow::NativeConstruct()
 {
 	Super::NativeConstruct();
-	//
-	// TEMPEditorComboTest1->AddOption("Penis");
-	// TEMPEditorComboTest1->AddOption("Penis2");
-	// TEMPEditorComboTest1->AddOption("Penis3");
-	// GetDepartments();
+}
+
+void UMetPaintingsWindow::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
 
 void UMetPaintingsWindow::OnGetDepartmentsComplete(TSharedPtr<IHttpRequest> HttpRequest,
-	TSharedPtr<IHttpResponse> HttpResponse, bool bSuccess)
+                                                   TSharedPtr<IHttpResponse> HttpResponse, bool bSuccess)
 {
 	// if (!bSuccess)
 	// {
-	// 	// Todo: Fire a delegate that the image is loaded with a placeholder texture, or do something
-	// 	// to indicate that this failed. Not sure how I should handle that. 
 	// 	UE_LOG(LogTemp, Error, TEXT("Departments Request failed"));
 	// 	return;
 	// }

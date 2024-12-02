@@ -48,8 +48,13 @@ public:
 	// UEditorUtilityComboBoxString* TEMPEditorComboTest1;
 
 	virtual void NativeConstruct() override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 	void OnGetDepartmentsComplete(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bSuccess);
+
+private:
+	// void PositionPaintingInfoMouseOver();
 	
 	// void GetDepartments();
 	

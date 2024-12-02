@@ -9,6 +9,11 @@
 #include "Interfaces/IHttpResponse.h"
 #include "Windows/WindowsPlatformApplicationMisc.h"
 
+void UMetPaintingItem::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
+
 void UMetPaintingItem::JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request,
                                                 TSharedPtr<IHttpResponse> Response, bool bSuccess)
 {
@@ -17,6 +22,7 @@ void UMetPaintingItem::JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request
 		// Todo: Fire a delegate that the image is loaded with a placeholder texture, or do something
 		// to indicate that this failed. Not sure how I should handle that. 
 		UE_LOG(LogTemp, Error, TEXT("Request failed"));
+		// initialized will be false.
 		return;
 	}
 	IHttpResponse* HTTPResp = Response.Get();
@@ -33,6 +39,7 @@ void UMetPaintingItem::JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request
 	
 	DownloadImageTask->OnSuccess.AddDynamic(this, &UMetPaintingItem::JLOnPreviewImageDownloadComplete);
 }
+
 
 void UMetPaintingItem::JLInitializeAndLoadInfo(int ObjectID)
 {
@@ -53,7 +60,16 @@ FReply UMetPaintingItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	{
 		// Note: I think this will only work on windows!!!
 		FPlatformApplicationMisc::ClipboardCopy(*(URLBase + FString::FromInt(PaintingInfo.objectID)));
-	}	
+	}
 	
 	return NativeReply;
+}
+
+void UMetPaintingItem::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	if (Initialized)
+	{
+		JLOnMouseEntered.Broadcast(true,PaintingInfo);
+	}
 }

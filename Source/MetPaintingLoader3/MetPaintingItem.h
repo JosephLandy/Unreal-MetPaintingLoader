@@ -14,7 +14,7 @@ class IHttpRequest;
 // DECLARE_DELEGATE_OneParam(FJLMouseEnteredDelegate, FMetPaintingInfo)
 // UDELEGATE()
 // DECLARE_DYNAMIC_DELEGATE_OneParam(FJLOnMouseEnteredDelegate, FMetPaintingInfo, PaintingInfo);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FJLOnMouseEnteredDelegate, FMetPaintingInfo, PaintingInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPaintingMouseOverDelegate, bool, MouseEntered, FMetPaintingInfo, PaintingInfo);
 
 
 /**
@@ -35,10 +35,12 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FMetPaintingInfo PaintingInfo;
 
-	void JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bSuccess);
-
 	UPROPERTY(BlueprintAssignable)
-	FJLOnMouseEnteredDelegate JLOnMouseEntered;
+	FPaintingMouseOverDelegate JLOnMouseEntered;
+
+	virtual void NativeConstruct() override;
+
+	void JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bSuccess);
 	
 	UFUNCTION(BlueprintCallable)
 	void JLInitializeAndLoadInfo(int ObjectID);
@@ -47,5 +49,9 @@ public:
 	void JLOnPreviewImageDownloadComplete(UTexture2DDynamic* Texture);
 
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 	
 };
