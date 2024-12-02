@@ -14,12 +14,15 @@ void UPaintingMouseOverInfoBox::NativeConstruct()
 
 void UPaintingMouseOverInfoBox::SetPaintingItem(UMetPaintingItem* Item)
 {
-	bPaintingInfoSet = true;
+	
 
 	PaintingItem = Item;
+	bPaintingInfoSet = true;
+	SetVisibility(ESlateVisibility::Visible);
 }
 
-void UPaintingMouseOverInfoBox::ResetPaintingInfo()
+void UPaintingMouseOverInfoBox::UnsetPaintingItem()
 {
 	PaintingItem = nullptr;
+	SetVisibility(ESlateVisibility::Hidden);
 }

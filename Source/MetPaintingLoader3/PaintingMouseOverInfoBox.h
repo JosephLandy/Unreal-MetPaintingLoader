@@ -29,7 +29,7 @@ public:
 	// UPROPERTY(BlueprintReadOnly);
 	// FMetPaintingInfo PaintingInfo;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	UMetPaintingItem* PaintingItem;
 	
 	virtual void NativeConstruct() override;
@@ -39,7 +39,7 @@ public:
 	void SetPaintingItem(UMetPaintingItem* Item);
 
 	UFUNCTION(BlueprintCallable)
-	void ResetPaintingInfo();
+	void UnsetPaintingItem();
 	
 	
 };
