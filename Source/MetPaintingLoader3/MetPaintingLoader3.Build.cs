@@ -14,7 +14,7 @@ public class MetPaintingLoader3 : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { "ApplicationCore" }); // needed for copy-paste
 
 		// Uncomment if you are using Slate UI
-		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "UnrealEd" });
 		
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");

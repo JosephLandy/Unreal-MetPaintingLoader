@@ -73,12 +73,22 @@ void UMetPaintingItem::JLInitializeAndLoadInfo(int ObjectID)
 FReply UMetPaintingItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	FReply NativeReply = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-
+	
 	// copy objectID to clipboard
 	if (Initialized)
 	{
 		// Note: I think this will only work on windows!!!
 		FPlatformApplicationMisc::ClipboardCopy(*(URLBase + FString::FromInt(PaintingInfo.objectID)));
+		// if (GEditor)
+		// {
+		// 	FNotificationInfo Info(FText::FromString("Object ID copied to clipboard"));
+		// 	Info.ExpireDuration = 5.0f;
+		// 	FSlateNotificationManager::Get().AddNotification(Info);
+		// }
+		// FSlateApplication::Get().GetGameViewport() // I wonder if this gets the editor viewport if it's
+		// in editor mode.
+
+		
 	}
 	
 	return NativeReply;
@@ -91,4 +101,45 @@ void UMetPaintingItem::NativeOnMouseEnter(const FGeometry& InGeometry, const FPo
 	{
 		JLOnMouseEntered.Broadcast(true,PaintingInfo);
 	}
+}
+
+void UMetPaintingItem::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
+
+	if (!GEditor)
+	{
+		UE_LOG(LogTemp, Display, TEXT("GEditor is null"));
+		return;
+	}
+	FViewport* VP = GEditor->GetActiveViewport();
+	if (!VP)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Viewport is null"));
+		return;
+	}
+	UE_LOG(LogTemp, Display, TEXT("Viewport type: %s"), *VP->GetViewportType().ToString());
+	FEditorViewportClient* ViewportClient = static_cast<FEditorViewportClient*>(VP->GetClient());
+	if (!ViewportClient)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No active viewport client found"));
+		return;
+	}
+
+	// FVector2D MousePos;
+	FViewportCursorLocation CursorLocation = ViewportClient->GetCursorWorldLocationFromMousePos();
+	FIntPoint CP = CursorLocation.GetCursorPos();
+
+	// CursorLocation.GetOrigin() 
+
+	// CursorLocation.
+
+
+	// NOTE: there is a LOT of drag and drop functionality in LevelEditorViewport.h, on LevelEditorViewportClient class.
+	TArray<UObject*> DroppedMeshes = {MeshToDrop};
+	TArray<FTypedElementHandle> OutNewObjects;
+	// This works, but it allows dropping items anywhere in the window, and it drops them at the wrong coordinates!
+	// Doesn't seem to correctly drop items 
+	ViewportClient->DropObjectsAtCoordinates(CP.X, CP.Y, DroppedMeshes, OutNewObjects);
+		
 }

@@ -41,6 +41,16 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FPaintingMouseOverDelegate JLOnMouseEntered;
 
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UStaticMesh> MeshToDrop;
+
+	UPROPERTY(BlueprintReadWrite)
+	UTexture2DDynamic* PrimaryImage;
+
+	
+
+	
+
 	virtual void NativeConstruct() override;
 
 	void JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bSuccess);
@@ -56,5 +66,8 @@ public:
 
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
+	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+	
 	
 };
