@@ -44,8 +44,10 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMesh> MeshToDrop;
 
-	UPROPERTY(BlueprintReadWrite)
-	UTexture2DDynamic* PrimaryImage;
+	// UPROPERTY(BlueprintReadWrite)
+	// UTexture2DDynamic* PrimaryImage;
+	UPROPERTY(BlueprintReadOnly)
+	UTexture2D* PrimaryImageTexture;
 
 	
 
@@ -61,8 +63,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void JLOnPreviewImageDownloadComplete(UTexture2DDynamic* Texture);
 
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	// UFUNCTION(BlueprintNativeEvent)
+	// void JLOnPrimaryImageDownloadComplete(UTexture2DDynamic* Texture);
 
+	// UTexture2D* ConvertTexture2DDynamicToTexture2D(UTexture2DDynamic* Texture2DDynamic);
+
+	void JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bArg);
+
+	
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
