@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Blutility",
-				"ScriptableEditorWidgets"
+				"ScriptableEditorWidgets",
+				"Engine"
 			]
 		}
 	],

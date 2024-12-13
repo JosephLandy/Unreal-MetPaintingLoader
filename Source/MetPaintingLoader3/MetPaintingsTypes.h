@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "MetPaintingsTypes.generated.h"
 
+enum class EImageFormat : int8;
+
 USTRUCT(BlueprintType)
 struct FTagItem
 {
@@ -137,3 +139,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FString GalleryNumber;
 };
+
+void SaveTextureAsAsset(UTexture2D* Texture, const FString& PackagePath, const FString& AssetName);
+
+FString GetExtensionFromImageFormat(EImageFormat Format);
+
+UTexture2D* ImportImageAsAsset(const FString& FilePath, const FString& TargetPath, const FString& AssetName);

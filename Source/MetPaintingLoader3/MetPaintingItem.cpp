@@ -71,6 +71,69 @@ void UMetPaintingItem::JLInitializeAndLoadInfo(int ObjectID)
 }
 
 
+// void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> HttpRequest,
+// 	TSharedPtr<IHttpResponse> HttpResponse, bool bArg)
+// {
+// 	TArray<uint8> RawImageData;
+// 	if (HttpResponse.IsValid())
+// 	{
+// 		if (EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
+// 		{
+// 			RawImageData = HttpResponse->GetContent();
+// 		}
+// 	} else
+// 	{
+// 		UE_LOG(LogTemp, Display, TEXT("HTTP Response is invalid"));
+// 		return;
+// 	}
+// 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
+// 	// FImageUtils::Save
+// 	EImageFormat ImageFormat = ImageWrapperModule.DetectImageFormat(RawImageData.GetData(), RawImageData.Num());
+// 	if (ImageFormat == EImageFormat::Invalid)
+// 	{
+// 		UE_LOG(LogTemp, Display, TEXT("Invalid image format"));
+// 		return;
+// 	}
+// 	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(ImageFormat);
+// 	if (!ImageWrapper.IsValid() || !ImageWrapper->SetCompressed(RawImageData.GetData(), RawImageData.Num()))
+// 	{
+// 		UE_LOG(LogTemp, Display, TEXT("ImageWrapper invalid!"));
+// 		return;
+// 	}
+// 	// TArray<uint8>* DecompressedData = nullptr;
+// 	TArray64<uint8> DecompressedData;
+//
+// 	if (!ImageWrapper->GetRaw(DecompressedData))
+// 	{
+// 		UE_LOG(LogTemp, Display, TEXT("Get Decompressed data failed!"));
+// 		return;
+// 	}
+//
+// 	const int32 Width = ImageWrapper->GetWidth();
+// 	const int32 Height = ImageWrapper->GetHeight();
+//
+// 	PrimaryImageTexture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+// 	PrimaryImageTexture->SetFlags(EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
+// 	
+// 	
+// 	if (!PrimaryImageTexture)
+// 	{
+// 		UE_LOG(LogTemp, Display, TEXT("Failed to create transient texture"));
+// 		return;
+// 	}
+//
+// 	FTexture2DMipMap& Mip = PrimaryImageTexture->GetPlatformData()->Mips[0];
+// 	void* MipData = Mip.BulkData.Lock(LOCK_READ_WRITE); // have to lock this to prevent concurrent access.
+//
+// 	FMemory::Memcpy(MipData, DecompressedData.GetData(), DecompressedData.Num());
+//
+// 	Mip.BulkData.Unlock();
+// 	PrimaryImageTexture->UpdateResource();
+//
+// 	// temporarily getting this 
+// 	SavePrimaryImageAsAsset();
+// }
+
 void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> HttpRequest,
 	TSharedPtr<IHttpResponse> HttpResponse, bool bArg)
 {
@@ -86,52 +149,51 @@ void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> Htt
 		UE_LOG(LogTemp, Display, TEXT("HTTP Response is invalid"));
 		return;
 	}
+	// Determine image format.
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
-	// FImageUtils::Save
 	EImageFormat ImageFormat = ImageWrapperModule.DetectImageFormat(RawImageData.GetData(), RawImageData.Num());
 	if (ImageFormat == EImageFormat::Invalid)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Invalid image format"));
 		return;
 	}
-	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(ImageFormat);
-	if (!ImageWrapper.IsValid() || !ImageWrapper->SetCompressed(RawImageData.GetData(), RawImageData.Num()))
+	FString Extension = GetExtensionFromImageFormat(ImageFormat);
+
+	// Get 
+	// Define the output file path (outside the Unreal project)
+	FString OutputFilePath = FPaths::ProjectDir() / TEXT("../../SavedImages/PrimaryImage") + Extension;
+
+	// Create the directory if it doesn't exist
+	// FPaths::CreateDirectoryTree(*FPaths::GetPath(OutputFilePath));
+	bool DirCreated = IFileManager::Get().MakeDirectory(*OutputFilePath);
+	// Save the raw image data to the file
+	if (FFileHelper::SaveArrayToFile(RawImageData, *OutputFilePath))
 	{
-		UE_LOG(LogTemp, Display, TEXT("ImageWrapper invalid!"));
-		return;
-	}
-	// TArray<uint8>* DecompressedData = nullptr;
-	TArray64<uint8> DecompressedData;
-	bool GetRawSucceeded = ImageWrapper->GetRaw(DecompressedData);
-	// if (!ImageWrapper->GetRaw(ERGBFormat::BGRA, 8, DecompressedData))
- //    {
- //        UE_LOG(LogTemp, Display, TEXT("Failed to get raw image data"));
- //        return;
- //    }
+		UE_LOG(LogTemp, Log, TEXT("Image saved successfully to: %s"), *OutputFilePath);
 
-	if (!GetRawSucceeded)
+		ImportImageAsAsset(
+			OutputFilePath,
+			TEXT("/Game/MyImportedTextures"), // Target folder in Content Browser
+			TEXT("MyPrimaryImage")           // Desired asset name
+		);
+	}
+	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("Get Decompressed data failed!"));
-		return;
+		UE_LOG(LogTemp, Error, TEXT("Failed to save image to: %s"), *OutputFilePath);
 	}
+}
 
-	const int32 Width = ImageWrapper->GetWidth();
-	const int32 Height = ImageWrapper->GetHeight();
-
-	PrimaryImageTexture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+void UMetPaintingItem::SavePrimaryImageAsAsset()
+{
 	if (!PrimaryImageTexture)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Failed to create transient texture"));
+		UE_LOG(LogTemp, Display, TEXT("PrimaryImageTexture is null"));
 		return;
 	}
-
-	FTexture2DMipMap& Mip = PrimaryImageTexture->GetPlatformData()->Mips[0];
-	void* MipData = Mip.BulkData.Lock(LOCK_READ_WRITE); // have to lock this to prevent concurrent access.
-
-	FMemory::Memcpy(MipData, DecompressedData.GetData(), DecompressedData.Num());
-
-	Mip.BulkData.Unlock();
-	PrimaryImageTexture->UpdateResource();
+	
+	FString PackagePath = "/Game/MetImages";
+	FString AssetName = "PrimaryImageTexture";
+	SaveTextureAsAsset(PrimaryImageTexture, PackagePath, AssetName);
 }
 
 
@@ -150,8 +212,9 @@ FReply UMetPaintingItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 		// 	Info.ExpireDuration = 5.0f;
 		// 	FSlateNotificationManager::Get().AddNotification(Info);
 		// }
-		// FSlateApplication::Get().GetGameViewport() // I wonder if this gets the editor viewport if it's
+		// auto V = FSlateApplication::Get().GetGameViewport(); // I wonder if this gets the editor viewport if it's
 		// in editor mode.
+		
 		if (!PaintingInfo.primaryImage.IsEmpty())
 		{
 			// UAsyncTaskDownloadImage* DownloadImageTask = UAsyncTaskDownloadImage::DownloadImage(PaintingInfo.primaryImage);

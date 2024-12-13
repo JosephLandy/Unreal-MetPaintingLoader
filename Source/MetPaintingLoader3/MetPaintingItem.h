@@ -49,10 +49,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UTexture2D* PrimaryImageTexture;
 
-	
-
-	
-
 	virtual void NativeConstruct() override;
 
 	void JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bSuccess);
@@ -62,6 +58,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void JLOnPreviewImageDownloadComplete(UTexture2DDynamic* Texture);
+	
 
 	// UFUNCTION(BlueprintNativeEvent)
 	// void JLOnPrimaryImageDownloadComplete(UTexture2DDynamic* Texture);
@@ -69,8 +66,9 @@ public:
 	// UTexture2D* ConvertTexture2DDynamicToTexture2D(UTexture2DDynamic* Texture2DDynamic);
 
 	void JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bArg);
-
 	
+	void SavePrimaryImageAsAsset();
+
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
