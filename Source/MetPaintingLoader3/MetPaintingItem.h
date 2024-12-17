@@ -7,6 +7,7 @@
 #include "MetPaintingsTypes.h"
 #include "MetPaintingItem.generated.h"
 
+class UMetPaintingsWindow;
 class IHttpResponse;
 class IHttpRequest;
 
@@ -35,6 +36,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool Initialized = false;
 
+	UPROPERTY(BlueprintReadOnly)
+	FString SanitizedTitle = "";
+
 	UPROPERTY(BlueprintReadWrite)
 	FMetPaintingInfo PaintingInfo;
 
@@ -58,8 +62,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void JLOnPreviewImageDownloadComplete(UTexture2DDynamic* Texture);
-	
 
+	UPROPERTY(BlueprintReadWrite)
+	UMetPaintingsWindow* Owner;
+	
 	// UFUNCTION(BlueprintNativeEvent)
 	// void JLOnPrimaryImageDownloadComplete(UTexture2DDynamic* Texture);
 
@@ -74,7 +80,5 @@ public:
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-
-	
 	
 };

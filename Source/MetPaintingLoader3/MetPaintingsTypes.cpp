@@ -5,6 +5,7 @@
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "EditorFramework/AssetImportData.h"
 #include "Factories/TextureFactory.h"
+#include "Materials/MaterialInstanceConstant.h"
 #include "UObject/SavePackage.h"
 
 
@@ -188,4 +189,65 @@ UTexture2D* ImportImageAsAsset(const FString& FilePath, const FString& TargetPat
 
 	// Cast and return the imported texture
 	return Cast<UTexture2D>(ImportedAsset);
+}
+
+UMaterialInstanceConstant* CreateMaterialInstanceAsset(UMaterialInterface* BaseMaterial, const FString& PackagePath,
+	const FString& InstanceName)
+{
+	if (!BaseMaterial)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BaseMaterial is null!"));
+		return nullptr;
+	}
+	// Create a unique asset path
+	FString UniquePackageName;
+	FString UniqueAssetName;
+	FAssetToolsModule& AssetToolsModule = FAssetToolsModule::GetModule();
+	AssetToolsModule.Get().CreateUniqueAssetName(PackagePath + TEXT("/") + InstanceName,
+		TEXT(""), UniquePackageName, UniqueAssetName);
+
+	// Create the package
+	UPackage* Package = CreatePackage(*UniquePackageName);
+	if (!Package)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to create package for the material instance."));
+		return nullptr;
+	}
+
+	// Create the material instance constant
+	UMaterialInstanceConstant* NewMaterialInstance = NewObject<UMaterialInstanceConstant>(Package,
+		*UniqueAssetName, RF_Public | RF_Standalone);
+
+	if (NewMaterialInstance)
+	{
+		// Set the parent material
+		NewMaterialInstance->SetParentEditorOnly(BaseMaterial);
+
+		// Mark the package dirty and notify the asset registry
+		FAssetRegistryModule::AssetCreated(NewMaterialInstance);
+		Package->MarkPackageDirty();
+		FSavePackageArgs SaveArgs;
+		SaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
+		
+		// Save the package to disk
+		FString PackageFilePath = FPackageName::LongPackageNameToFilename(UniquePackageName, FPackageName::GetAssetPackageExtension());
+		bool SavePackageSucceeded = UPackage::SavePackage(Package, NewMaterialInstance, *PackageFilePath, SaveArgs);
+		
+		if (SavePackageSucceeded)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Material instance created and saved: %s"), *PackageFilePath);
+			return NewMaterialInstance; // Return the created material instance
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to save the material instance package."));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to create the material instance object."));
+	}
+	
+	return nullptr; // Return nullptr if creation or saving failed
+	
 }

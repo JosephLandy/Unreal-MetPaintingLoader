@@ -2,11 +2,14 @@
 
 #include "MetPaintingItem.h"
 
+#include "FileBrowserUtils.h"
 #include "HttpModule.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "ImageUtils.h"
+#include "InterchangeHelper.h"
 #include "JsonObjectConverter.h"
+#include "MetPaintingsWindow.h"
 #include "Blueprint/AsyncTaskDownloadImage.h"
 #include "Engine/Texture2DDynamic.h"
 #include "Interfaces/IHttpResponse.h"
@@ -41,6 +44,8 @@ void UMetPaintingItem::JLOnInfoDownloadComplete(TSharedPtr<IHttpRequest> Request
 		return;
 		
 	}
+	SanitizedTitle = PaintingInfo.title.Replace(TEXT(" "), TEXT("_"));
+	SanitizedTitle = UFileBrowserUtils::SanitizeFilename(SanitizedTitle);
 	
 	// This might need to emit a signal at this point when it's actually loaded the info and various properties can
 	// actually be displayed. Otherwise, it might be bad trying to display undefined struct members.
@@ -71,69 +76,6 @@ void UMetPaintingItem::JLInitializeAndLoadInfo(int ObjectID)
 }
 
 
-// void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> HttpRequest,
-// 	TSharedPtr<IHttpResponse> HttpResponse, bool bArg)
-// {
-// 	TArray<uint8> RawImageData;
-// 	if (HttpResponse.IsValid())
-// 	{
-// 		if (EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
-// 		{
-// 			RawImageData = HttpResponse->GetContent();
-// 		}
-// 	} else
-// 	{
-// 		UE_LOG(LogTemp, Display, TEXT("HTTP Response is invalid"));
-// 		return;
-// 	}
-// 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
-// 	// FImageUtils::Save
-// 	EImageFormat ImageFormat = ImageWrapperModule.DetectImageFormat(RawImageData.GetData(), RawImageData.Num());
-// 	if (ImageFormat == EImageFormat::Invalid)
-// 	{
-// 		UE_LOG(LogTemp, Display, TEXT("Invalid image format"));
-// 		return;
-// 	}
-// 	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(ImageFormat);
-// 	if (!ImageWrapper.IsValid() || !ImageWrapper->SetCompressed(RawImageData.GetData(), RawImageData.Num()))
-// 	{
-// 		UE_LOG(LogTemp, Display, TEXT("ImageWrapper invalid!"));
-// 		return;
-// 	}
-// 	// TArray<uint8>* DecompressedData = nullptr;
-// 	TArray64<uint8> DecompressedData;
-//
-// 	if (!ImageWrapper->GetRaw(DecompressedData))
-// 	{
-// 		UE_LOG(LogTemp, Display, TEXT("Get Decompressed data failed!"));
-// 		return;
-// 	}
-//
-// 	const int32 Width = ImageWrapper->GetWidth();
-// 	const int32 Height = ImageWrapper->GetHeight();
-//
-// 	PrimaryImageTexture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
-// 	PrimaryImageTexture->SetFlags(EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
-// 	
-// 	
-// 	if (!PrimaryImageTexture)
-// 	{
-// 		UE_LOG(LogTemp, Display, TEXT("Failed to create transient texture"));
-// 		return;
-// 	}
-//
-// 	FTexture2DMipMap& Mip = PrimaryImageTexture->GetPlatformData()->Mips[0];
-// 	void* MipData = Mip.BulkData.Lock(LOCK_READ_WRITE); // have to lock this to prevent concurrent access.
-//
-// 	FMemory::Memcpy(MipData, DecompressedData.GetData(), DecompressedData.Num());
-//
-// 	Mip.BulkData.Unlock();
-// 	PrimaryImageTexture->UpdateResource();
-//
-// 	// temporarily getting this 
-// 	SavePrimaryImageAsAsset();
-// }
-
 void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> HttpRequest,
 	TSharedPtr<IHttpResponse> HttpResponse, bool bArg)
 {
@@ -158,14 +100,21 @@ void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> Htt
 		return;
 	}
 	FString Extension = GetExtensionFromImageFormat(ImageFormat);
+	
 
 	// Get 
 	// Define the output file path (outside the Unreal project)
-	FString OutputFilePath = FPaths::ProjectDir() / TEXT("../../SavedImages/PrimaryImage") + Extension;
-
+	// FString OutputFilePath = FPaths::ProjectDir() / TEXT("../../SavedImages/PrimaryImage") + Extension;
+	FString ImageFileName =  SanitizedTitle + Extension;
+	if (!Owner)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Owner not set on MetPaintingItem"));
+		return;
+	}
+	FString OutputFilePath = Owner->ImageSourcePath / ImageFileName;
 	// Create the directory if it doesn't exist
 	// FPaths::CreateDirectoryTree(*FPaths::GetPath(OutputFilePath));
-	bool DirCreated = IFileManager::Get().MakeDirectory(*OutputFilePath);
+	bool DirCreated = IFileManager::Get().MakeDirectory(*Owner->ImageSourcePath);
 	// Save the raw image data to the file
 	if (FFileHelper::SaveArrayToFile(RawImageData, *OutputFilePath))
 	{
@@ -173,8 +122,8 @@ void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> Htt
 
 		ImportImageAsAsset(
 			OutputFilePath,
-			TEXT("/Game/MyImportedTextures"), // Target folder in Content Browser
-			TEXT("MyPrimaryImage")           // Desired asset name
+			Owner->AssetImportPath, // Target folder in Content Browser
+			TEXT("T_") + SanitizedTitle           // Desired asset name
 		);
 	}
 	else

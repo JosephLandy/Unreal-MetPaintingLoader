@@ -25,3 +25,21 @@ void UFileBrowserUtils::OpenDirectoryDialog(const FString& DialogTitle, const FS
 		DesktopPlatform->OpenDirectoryDialog(ParentWindowPtr, DialogTitle, DefaultPath, OutFolder);
 	}
 }
+
+FString UFileBrowserUtils::SanitizeFilename(const FString& InputString)
+{
+	// List of characters to remove
+	const FString InvalidChars = TEXT("\\/:*?\"<>|");
+
+	FString Result;
+	for (TCHAR Character : InputString)
+	{
+		// Add to the result only if it's not in the invalid character list
+		if (!InvalidChars.Contains(FString(1, &Character)))
+		{
+			Result.AppendChar(Character);
+		}
+	}
+
+	return Result;
+}

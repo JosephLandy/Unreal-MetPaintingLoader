@@ -145,3 +145,6 @@ void SaveTextureAsAsset(UTexture2D* Texture, const FString& PackagePath, const F
 FString GetExtensionFromImageFormat(EImageFormat Format);
 
 UTexture2D* ImportImageAsAsset(const FString& FilePath, const FString& TargetPath, const FString& AssetName);
+
+UMaterialInstanceConstant* CreateMaterialInstanceAsset(UMaterialInterface* BaseMaterial, const FString& PackagePath,
+	const FString& InstanceName);
