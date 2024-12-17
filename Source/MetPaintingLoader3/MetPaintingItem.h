@@ -28,7 +28,6 @@ class METPAINTINGLOADER3_API UMetPaintingItem : public UEditorUtilityWidget
 
 private:
 	
-	
 public:
 	UPROPERTY(BlueprintReadOnly)
 	FString URLBase = "https://collectionapi.metmuseum.org/public/collection/v1/objects/";
@@ -73,8 +72,6 @@ public:
 
 	void JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bArg);
 	
-	void SavePrimaryImageAsAsset();
-
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

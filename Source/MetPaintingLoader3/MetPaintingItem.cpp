@@ -13,6 +13,7 @@
 #include "Blueprint/AsyncTaskDownloadImage.h"
 #include "Engine/Texture2DDynamic.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Materials/MaterialInstanceConstant.h"
 #include "Windows/WindowsPlatformApplicationMisc.h"
 
 void UMetPaintingItem::NativeConstruct()
@@ -120,31 +121,28 @@ void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> Htt
 	{
 		UE_LOG(LogTemp, Log, TEXT("Image saved successfully to: %s"), *OutputFilePath);
 
-		ImportImageAsAsset(
+
+		UTexture2D* ImportedTex = ImportImageAsAsset(
 			OutputFilePath,
 			Owner->AssetImportPath, // Target folder in Content Browser
 			TEXT("T_") + SanitizedTitle           // Desired asset name
 		);
+
+		UMaterialInstanceConstant* Mat = CreateMaterialInstanceAsset(
+			Owner->BasePaintingMat,
+			Owner->AssetImportPath,
+			TEXT("MI_") + SanitizedTitle
+		);
+		// Set the texture parameter value
+		FMaterialParameterInfo ParamInfo(FName("PaintingTexture"));
+		Mat->SetTextureParameterValueEditorOnly(ParamInfo, ImportedTex);
+		
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to save image to: %s"), *OutputFilePath);
 	}
 }
-
-void UMetPaintingItem::SavePrimaryImageAsAsset()
-{
-	if (!PrimaryImageTexture)
-	{
-		UE_LOG(LogTemp, Display, TEXT("PrimaryImageTexture is null"));
-		return;
-	}
-	
-	FString PackagePath = "/Game/MetImages";
-	FString AssetName = "PrimaryImageTexture";
-	SaveTextureAsAsset(PrimaryImageTexture, PackagePath, AssetName);
-}
-
 
 FReply UMetPaintingItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {

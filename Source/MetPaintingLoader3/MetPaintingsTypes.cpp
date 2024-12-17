@@ -121,7 +121,6 @@ UAssetImportData* GetAssetImportData(UObject* Asset)
 }
 
 
-/// NOTE: This doesn't link the imported texture with the source file, so it can't be modified and reimported.  
 UTexture2D* ImportImageAsAsset(const FString& FilePath, const FString& TargetPath, const FString& AssetName)
 {
 	if (!FPaths::FileExists(FilePath))
