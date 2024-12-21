@@ -59,7 +59,7 @@ FString UQueryParamsDetailsView::GenerateQueryParams()
 	AppendParam("isHighlight", SearchParameters.isHighlight, SearchParameters.Use_isHighlight);
 	AppendParam("title", SearchParameters.title, SearchParameters.Use_title);
 	AppendParam("tags", SearchParameters.tags, SearchParameters.Use_tags);
-	AppendParam("departmentId", SearchParameters.departmentId, SearchParameters.Use_departmentId);
+	// AppendParam("departmentId", SearchParameters.departmentId, SearchParameters.Use_departmentId);
 	AppendParam("isOnView", SearchParameters.isOnView, SearchParameters.Use_isOnView);
 	AppendParam("artistOrCulture", SearchParameters.artistOrCulture, SearchParameters.Use_artistOrCulture);
 	AppendStringParam("medium", SearchParameters.medium, SearchParameters.Use_medium);

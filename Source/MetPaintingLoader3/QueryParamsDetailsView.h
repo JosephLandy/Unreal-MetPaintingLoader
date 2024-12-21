@@ -28,10 +28,10 @@ public:
 	bool Use_tags = false;
 	UPROPERTY(EditAnywhere, meta=(EditCondition="Use_tags", EditConditionHides))
 	bool tags;
-	UPROPERTY(EditAnywhere)
-	bool Use_departmentId = false;
-	UPROPERTY(EditAnywhere, meta=(EditCondition="Use_departmentId", EditConditionHides))
-	int departmentId;
+	// UPROPERTY(EditAnywhere)
+	// bool Use_departmentId = false;
+	// UPROPERTY(EditAnywhere, meta=(EditCondition="Use_departmentId", EditConditionHides))
+	// int departmentId;
 	UPROPERTY(EditAnywhere)
 	bool Use_isOnView = false;
 	UPROPERTY(EditAnywhere, meta=(EditCondition="Use_isOnView", EditConditionHides))

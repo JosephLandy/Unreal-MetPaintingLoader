@@ -9,6 +9,7 @@
 #include "ImageUtils.h"
 #include "InterchangeHelper.h"
 #include "JsonObjectConverter.h"
+#include "MetPaintingActor.h"
 #include "MetPaintingsWindow.h"
 #include "Blueprint/AsyncTaskDownloadImage.h"
 #include "Engine/Texture2DDynamic.h"
@@ -136,12 +137,24 @@ void UMetPaintingItem::JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> Htt
 		// Set the texture parameter value
 		FMaterialParameterInfo ParamInfo(FName("PaintingTexture"));
 		Mat->SetTextureParameterValueEditorOnly(ParamInfo, ImportedTex);
+		InstantiateMetPaintingActor(Mat);
 		
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to save image to: %s"), *OutputFilePath);
 	}
+}
+
+void UMetPaintingItem::InstantiateMetPaintingActor(UMaterialInstanceConstant* Mat)
+{
+	AMetPaintingActor* Painting = GetWorld()->SpawnActor<AMetPaintingActor>(MetPaintingActorClass);
+	Painting->SetPaintingMaterial(Mat);
+	float Width = PaintingInfo.measurements[0].elementMeasurements.Width;
+	float Height = PaintingInfo.measurements[0].elementMeasurements.Height;
+	Painting->SizePainting(Width, Height);
+	Painting->SetActorRelativeLocation(FVector(0, 0, Height));
+	
 }
 
 FReply UMetPaintingItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EditorUtilityWidget.h"
+#include "MetPaintingActor.h"
 #include "MetPaintingsTypes.h"
 #include "MetPaintingItem.generated.h"
 
@@ -64,6 +65,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	UMetPaintingsWindow* Owner;
+
+	UPROPERTY(EditDefaultsOnly) // default to AMetPaintingActor, but should be set to BP with frame. 
+	TSubclassOf<AMetPaintingActor> MetPaintingActorClass = AMetPaintingActor::StaticClass();
 	
 	// UFUNCTION(BlueprintNativeEvent)
 	// void JLOnPrimaryImageDownloadComplete(UTexture2DDynamic* Texture);
@@ -71,6 +75,8 @@ public:
 	// UTexture2D* ConvertTexture2DDynamicToTexture2D(UTexture2DDynamic* Texture2DDynamic);
 
 	void JLOnPrimaryImageHTTPComplete(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bArg);
+
+	void InstantiateMetPaintingActor(UMaterialInstanceConstant* Mat);
 	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 

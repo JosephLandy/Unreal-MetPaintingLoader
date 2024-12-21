@@ -16,6 +16,29 @@ struct FTagItem
 };
 
 USTRUCT(BlueprintType)
+struct FMetWidthHeight
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite)
+	float Width;
+	UPROPERTY(BlueprintReadWrite)
+	float Height;
+};
+
+USTRUCT(BlueprintType)
+struct FMetMeasurements
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FString elementName;
+	// FString elementDescription = nullptr; no idea what to do with this one, since it can be null.
+	UPROPERTY(BlueprintReadWrite)
+	FMetWidthHeight elementMeasurements;
+};
+
+USTRUCT(BlueprintType)
 struct FMetPaintingInfo
 {
 	GENERATED_BODY()
@@ -90,9 +113,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FString dimensions;
 	// UPROPERTY(BlueprintReadWrite)
-	// float dimensionsParsed;
-	// UPROPERTY(BlueprintReadWrite)
-	// FString measurements;
+	// float dimensionsParsed; // may not be present!
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FMetMeasurements> measurements;
 	UPROPERTY(BlueprintReadWrite)
 	FString creditLine;
 	UPROPERTY(BlueprintReadWrite)

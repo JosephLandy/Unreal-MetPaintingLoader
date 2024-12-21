@@ -10,26 +10,6 @@ class IHttpResponse;
 class IHttpRequest;
 class UEditorUtilityComboBoxString;
 
-USTRUCT()
-struct FDepartmentEntry
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	int departmentId;
-	UPROPERTY()
-	FString displayName;
-};
-
-
-USTRUCT()
-struct FDepartmentsStruct
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	TArray<FDepartmentEntry> departments;
-};
 
 
 
@@ -68,11 +48,10 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
-	void OnGetDepartmentsComplete(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bSuccess);
+	
 
 private:
 	// void PositionPaintingInfoMouseOver();
 	
-	// void GetDepartments();
 	
 };
